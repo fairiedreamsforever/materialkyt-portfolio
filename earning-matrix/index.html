@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Platform Earning Matrix | MaterialKyt</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f8fafc; color: #1e293b; max-width: 850px; margin: 40px auto; padding: 0 20px; line-height: 1.5; }
+        .card { background: white; padding: 35px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; }
+        .brand { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-bottom: 5px; }
+        h1 { color: #0f172a; font-size: 24px; margin: 0 0 10px 0; }
+        p.subtitle { color: #475569; margin: 0 0 25px 0; font-size: 15px; }
+        .platform-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 12px; align-items: center; }
+        label { font-weight: 600; display: block; margin-bottom: 4px; color: #475569; font-size: 13px; }
+        input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; box-sizing: border-box; background-color: #fff; }
+        button { background-color: #0f172a; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 15px; transition: background 0.2s; }
+        button:hover { background-color: #1e293b; }
+        .result-box { display: none; margin-top: 30px; padding: 25px; border-radius: 10px; background-color: #f0fdf4; border: 1px solid #bbf7d0; }
+        .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: center; }
+        .metric-title { font-size: 13px; font-weight: 600; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; }
+        .metric-value { font-size: 28px; font-weight: 800; color: #14532d; margin-top: 5px; }
+        .info-section { margin-top: 45px; border-top: 1px solid #e2e8f0; padding-top: 25px; color: #64748b; font-size: 13px; line-height: 1.6; }
+        @media (max-width: 600px) { .platform-row { grid-template-columns: 1fr; gap: 10px; } .metric-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="brand">MaterialKyt / Earning Utilities</div>
+    <h1>Multi-Platform Earning Matrix</h1>
+    <p class="subtitle">Aggregate multiple concurrent contracting revenue streams to calculate integrated monthly and annual projections.</p>
+    
+    <div id="platformsContainer">
+        <div class="platform-row">
+            <div>
+                <label>Platform/Source Name:</label>
+                <input type="text" class="p-name" value="Platform Alpha (e.g. Courier Apps)">
+            </div>
+            <div>
+                <label>Avg. Hourly Rate ($):</label>
+                <input type="number" class="p-rate" min="0" value="24" step="0.5">
+            </div>
+            <div>
+                <label>Weekly Hours:</label>
+                <input type="number" class="p-hours" min="0" value="25">
+            </div>
+        </div>
+        <div class="platform-row">
+            <div>
+                <label>Platform/Source Name:</label>
+                <input type="text" class="p-name" value="Platform Beta (e.g. Logistics Network)">
+            </div>
+            <div>
+                <label>Avg. Hourly Rate ($):</label>
+                <input type="number" class="p-rate" min="0" value="30" step="0.5">
+            </div>
+            <div>
+                <label>Weekly Hours:</label>
+                <input type="number" class="p-hours" min="0" value="15">
+            </div>
+        </div>
+    </div>
+
+    <button onclick="calculateMatrixEarnings()">Compute Integrated Projections</button>
+
+    <div id="resultBox" class="result-box">
+        <div class="metric-grid">
+            <div>
+                <div class="metric-title">Projected Monthly Revenue</div>
+                <div class="metric-value" id="monthlyMatrixDisplay">$0.00</div>
+            </div>
+            <div>
+                <div class="metric-title">Projected Annual Revenue</div>
+                <div class="metric-value" id="annualMatrixDisplay">$0.00</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <h3>How Integrated Multi-Platform Forecasting Balances Cash Flow</h3>
+        <p>Independent contractors routinely balance multiple dynamic earning allocations across the gig economy. Because weekly app volume fluctuates based on peak market demands, calculating a blended, weighted projection stabilizes personal tracking metrics. Aggregating these hourly parameters across distinct platforms provides a clean, clear baseline structure for anticipating quarterly tax responsibilities and maintaining micro-enterprise business liquidity constraints.</p>
+    </div>
+</div>
+
+<script>
+function calculateMatrixEarnings() {
+    const rates = document.querySelectorAll('.p-rate');
+    const hours = document.querySelectorAll('.p-hours');
+    let totalWeeklyGross = 0;
+
+    for (let i = 0; i < rates.length; i++) {
+        const r = parseFloat(rates[i].value) || 0;
+        const h = parseFloat(hours[i].value) || 0;
+        totalWeeklyGross += (r * h);
+    }
+
+    // Standard institutional conversion factor rules (52 weeks / 12 months = 4.3333 weeks per month)
+    const projectedMonthly = totalWeeklyGross * 4.3333;
+    const projectedAnnual = totalWeeklyGross * 52;
+
+    const box = document.getElementById('resultBox');
+    document.getElementById('monthlyMatrixDisplay').textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(projectedMonthly);
+    document.getElementById('annualMatrixDisplay').textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(projectedAnnual);
+    
+    box.style.display = 'block';
+}
+</script>
+
+</body>
+</html>
