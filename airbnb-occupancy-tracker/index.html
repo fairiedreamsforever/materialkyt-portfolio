@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airbnb Break-Even & Occupancy Heat Tracker | MaterialKyt</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f8fafc; color: #1e293b; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.5; }
+        .card { background: white; padding: 35px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; }
+        .brand { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-bottom: 5px; }
+        h1 { color: #0f172a; font-size: 24px; margin: 0 0 10px 0; }
+        p.subtitle { color: #475569; margin: 0 0 25px 0; font-size: 15px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        label { font-weight: 600; display: block; margin-bottom: 6px; color: #475569; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 16px; box-sizing: border-box; background-color: #fff; }
+        button { background-color: #0f172a; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 10px; transition: background 0.2s; }
+        button:hover { background-color: #1e293b; }
+        .result-box { display: none; margin-top: 30px; padding: 25px; border-radius: 10px; background-color: #f8fafc; border: 1px solid #e2e8f0; }
+        .metric-title { font-size: 14px; font-weight: 600; color: #64748b; text-transform: uppercase; }
+        .metric-value { font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 15px; }
+        .heat-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 15px; }
+        .day-box { padding: 12px 5px; text-align: center; border-radius: 6px; font-size: 12px; font-weight: 600; border: 1px solid #e2e8f0; background: #fff; color: #64748b; }
+        .break-day { background-color: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+        .profit-day { background-color: #dcfce7; color: #166534; border-color: #86efac; }
+        .info-section { margin-top: 45px; border-top: 1px solid #e2e8f0; padding-top: 25px; color: #64748b; font-size: 13px; line-height: 1.6; }
+        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="brand">MaterialKyt / Property Utilities</div>
+    <h1>Airbnb Break-Even & Occupancy Tracker</h1>
+    <p class="subtitle">Input your total monthly asset holding costs and short-term rental projections to model your absolute monthly occupancy break-even matrix threshold.</p>
+    
+    <div class="grid">
+        <div>
+            <label for="monthlyHolding">Monthly Carrying Cost (Mortgage, Tax, Ins):</label>
+            <input type="number" id="monthlyHolding" min="100" step="100" value="2200">
+        </div>
+        <div>
+            <label for="avgNightly">Average Nightly Rate (Net of Platform Fees):</label>
+            <input type="number" id="avgNightly" min="10" step="10" value="150">
+        </div>
+    </div>
+
+    <div class="grid">
+        <div>
+            <label for="monthlyUtilities">Monthly Operating Expenses (WiFi, Utilities):</label>
+            <input type="number" id="monthlyUtilities" min="0" step="50" value="350">
+        </div>
+        <div>
+            <label for="avgCleaning">Net Cleaning Turnover Costs (Per Stay):</label>
+            <input type="number" id="avgCleaning" min="0" step="10" value="120">
+        </div>
+    </div>
+
+    <div class="grid">
+        <div>
+            <label for="turnoverFrequency">Estimated Turnovers Per Month:</label>
+            <input type="number" id="turnoverFrequency" min="0" step="1" value="4">
+        </div>
+        <div>
+            <label for="targetMargin">Target Profit Margin Strategy:</label>
+            <select id="targetMargin">
+                <option value="0">Absolute Break-Even Base (0% Margin)</option>
+                <option value="0.20">Standard Yield Portfolio Strategy (20% Margin)</option>
+                <option value="0.40">Aggressive Asset Return Yield (40% Margin)</option>
+            </select>
+        </div>
+    </div>
+
+    <button onclick="calculateAirbnbBreakEven()">Generate Occupancy Matrix</button>
+
+    <div id="resultBox" class="result-box">
+        <div class="grid">
+            <div>
+                <div class="metric-title">Required Nights Booked</div>
+                <div class="metric-value" id="nightsDisplay">0 Nights / mo</div>
+            </div>
+            <div>
+                <div class="metric-title">Minimum Occupancy Rate</div>
+                <div class="metric-value" id="rateDisplay">0% Rate</div>
+            </div>
+        </div>
+
+        <div class="metric-title" style="margin-top: 10px;">30-Day Monthly Threshold Visualizer:</div>
+        <div class="heat-grid" id="heatGridDisplay"></div>
+        <p style="font-size:12px; color:#64748b; margin-top:10px; font-style:italic;">Note: Red days represent operational carrying overhead allocations. Green days indicate pure operating profit accumulation thresholds.</p>
+    </div>
+
+    <!-- SEO crawlable rich copy block -->
+    <div class="info-section">
+        <h3>How Short-Term Rental Occupancy Metrics Scale Portfolio Returns</h3>
+        <p>Short-term rental cash flows fluctuate heavily depending on dynamic monthly seasonality metrics. Unlike traditional long-term residential leases, a hospitality micro-asset requires continuous turnover logic, on-demand utility overhead management, and consistent marketing parameters. Tracking your exact nightly threshold ensures capital portfolios preserve liquidity during low-occupancy off-seasons while isolating optimal pricing bands during peak holiday tracking windows.</p>
+    </div>
+</div>
+
+<script>
+function calculateAirbnbBreakEven() {
+    const holding = parseFloat(document.getElementById('monthlyHolding').value) || 0;
+    const nightly = parseFloat(document.getElementById('avgNightly').value) || 1;
+    const utilities = parseFloat(document.getElementById('monthlyUtilities').value) || 0;
+    const cleaning = parseFloat(document.getElementById('avgCleaning').value) || 0;
+    const turnovers = parseInt(document.getElementById('turnoverFrequency').value) || 0;
+    const premiumMargin = parseFloat(document.getElementById('targetMargin').value);
+
+    if(holding <= 0) return;
+
+    // Compute exact monthly operational cost structure
+    const totalFixedCosts = holding + utilities;
+    const totalVariableCleaning = cleaning * turnovers;
+    const rawTargetRevenue = (totalFixedCosts + totalVariableCleaning) * (1 + premiumMargin);
+
+    // Calculate required booking nights threshold
+    let requiredNights = Math.ceil(rawTargetRevenue / nightly);
+    if(requiredNights > 30) requiredNights = 30; // Bound calculations cleanly to calendar limits
+    const mandatoryOccupancyRate = Math.round((requiredNights / 30) * 100);
+
+    // Render results to layout panel viewports
+    const box = document.getElementById('resultBox');
+    document.getElementById('nightsDisplay').textContent = `${requiredNights} Days / mo`;
+    document.getElementById('rateDisplay').textContent = `${mandatoryOccupancyRate}% Occupancy`;
+
+    // Dynamically build calendar grid blocks
+    const grid = document.getElementById('heatGridDisplay');
+    grid.innerHTML = '';
+
+    for (let day = 1; day <= 30; day++) {
+        const boxDiv = document.createElement('div');
+        boxDiv.className = 'day-box';
+        boxDiv.textContent = `Day ${day}`;
+        
+        if (day <= requiredNights) {
+            boxDiv.classList.add('break-day');
+        } else {
+            boxDiv.classList.add('profit-day');
+        }
+        grid.appendChild(boxDiv);
+    }
+
+    box.style.display = 'block';
+}
+</script>
+
+</body>
+</html>
